@@ -24,7 +24,7 @@ namespace Business.Concrete
             _productDal = productDal;
             _categoryService = categoryService;
         }
-        [SecuredOperation("product.add,admin")]
+        //[SecuredOperation("product.add,admin")]
         [ValidationAspect(typeof(ProductValidator))]
         [CacheRemoveAspect("IProductService.Get")]
         public IResult Add(Product product)
@@ -96,7 +96,7 @@ namespace Business.Concrete
         }
         private IResult CheckIfProductNameExists(string productName)
         {
-            var result = _productDal.Get(p => p.ProductName == productName);
+            var result = _productDal.GetAll(p => p.ProductName == productName);
             if (result == null)
             {
                 return new ErrorResult(Messages.ProductNameAlreadyExists);
