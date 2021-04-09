@@ -1,9 +1,8 @@
 ﻿using Business.Concrete;
-using DataAccess.Concrete.EntitiyFramework;
+using DataAccess.Abstract;
+using DataAccess.Concrete.EntityFramework;
 using DataAccess.Concrete.InMemory;
-using Entities.Concrete;
 using System;
-using System.IO;
 
 namespace ConsoleUI
 {
@@ -11,46 +10,34 @@ namespace ConsoleUI
     {
         static void Main(string[] args)
         {
-            // UserTest();
-            // CustomerTest();
-            RentalTest();
+            ProductTest();
+            //CategoryTest();
         }
 
-        private static void RentalTest()
+        private static void CategoryTest()
         {
-            RentalManager rentalManager = new RentalManager(new EfRentalDal());
-
-            var rental = rentalManager.Add(new Rental
+            CategoryManager categoryManager = new CategoryManager(new EfCategoryDal());
+            foreach (var category in categoryManager.GetAll().Data)
             {
-                CarId = 1,
-                CustomerId = 2,
-                RentDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day),
-            });
-
-            Console.WriteLine(rental.Message);
-        }
-
-        private static void CustomerTest()
-        {
-            CustomerManager customerManager = new CustomerManager(new EfCustomerDal());
-
-            var listCustomers = customerManager.GetAll();
-
-            foreach (var customer in listCustomers.Data)
-            {
-                Console.WriteLine(customer.CompanyName);
+                Console.WriteLine(category.CategoryName);
             }
         }
 
-        private static void UserTest()
+        private static void ProductTest()
         {
-            UserManager userManager = new UserManager(new EfUserDal());
+            ProductManager productManager = new ProductManager(new EfProductDal(),new CategoryManager(new EfCategoryDal()));
 
-            var listUsers = userManager.GetAll();
-
-            foreach (var user in listUsers.Data)
+            var result = productManager.GetProductDetails();
+            if(result.Success==true)
             {
-                Console.WriteLine(user.FirstName);
+                foreach (var product in result.Data)
+                {
+                Console.WriteLine(product.ProductName +" // " +product.CategoryName);
+                }
+            }
+            else
+            {
+                Console.WriteLine(result.Message);
             }
         }
     }

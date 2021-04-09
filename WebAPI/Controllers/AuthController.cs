@@ -6,15 +6,13 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : Controller
+    public class AuthController:Controller
     {
-        private readonly IAuthService _authService;
-        private readonly IUserService _userService;
+        private IAuthService _authService;
 
-        public AuthController(IAuthService authService, IUserService userService)
+        public AuthController(IAuthService authService)
         {
             _authService = authService;
-            _userService = userService;
         }
 
         [HttpPost("login")]
@@ -32,7 +30,7 @@ namespace WebAPI.Controllers
                 return Ok(result);
             }
 
-            return BadRequest(result);
+            return BadRequest(result.Message);
         }
 
         [HttpPost("register")]
@@ -44,26 +42,12 @@ namespace WebAPI.Controllers
                 return BadRequest(userExists.Message);
             }
 
-            var registerResult = _authService.Register(userForRegisterDto, userForRegisterDto.Password);
+            var registerResult = _authService.Register(userForRegisterDto,userForRegisterDto.Password);
             var result = _authService.CreateAccessToken(registerResult.Data);
             if (result.Success)
             {
-                return Ok(result);
+                return Ok(result.Data);
             }
-
-            return BadRequest(result.Message);
-        }
-
-        [HttpPut("update")]
-        public ActionResult Update(UserForUpdateDto userForUpdate)
-        {
-            _authService.Update(userForUpdate);
-
-            var user = _userService.GetById(userForUpdate.UserId);
-            var result = _authService.CreateAccessToken(user.Data);
-
-            if (result.Success)
-                return Ok(result);
 
             return BadRequest(result.Message);
         }
