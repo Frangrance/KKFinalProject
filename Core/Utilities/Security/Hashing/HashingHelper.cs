@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 
 namespace Core.Utilities.Security.Hashing
 {
@@ -20,16 +18,17 @@ namespace Core.Utilities.Security.Hashing
             using (var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt))
             {
                 var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+
                 for (int i = 0; i < computedHash.Length; i++)
                 {
-                    if(computedHash[i]!=passwordHash[i])
+                    if (computedHash[i] != passwordHash[i])
                     {
                         return false;
                     }
                 }
 
+                return true;
             }
-            return true;
         }
     }
 }

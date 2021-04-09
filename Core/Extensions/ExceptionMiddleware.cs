@@ -3,14 +3,14 @@ using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Core.Extensions
 {
-   public class ExceptionMiddleware
+    public class ExceptionMiddleware
     {
-        private RequestDelegate _next;
+        private readonly RequestDelegate _next;
 
         public ExceptionMiddleware(RequestDelegate next)
         {
@@ -25,28 +25,29 @@ namespace Core.Extensions
             }
             catch (Exception e)
             {
-                await HandleExceptionAsync(httpContext,e);
+                await HandleExceptionAsync(httpContext, e);
             }
         }
 
         private Task HandleExceptionAsync(HttpContext httpContext, Exception e)
         {
             httpContext.Response.ContentType = "application/json";
-            httpContext.Response.StatusCode = (int)System.Net.HttpStatusCode.InternalServerError;
+            httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
             string message = "Internal Server Error";
             IEnumerable<ValidationFailure> errors;
-            if (e.GetType()==typeof(ValidationException))
+
+            if (e.GetType() == typeof(ValidationException))
             {
                 message = e.Message;
                 errors = ((ValidationException)e).Errors;
-                httpContext.Response.StatusCode=400;
+                httpContext.Response.StatusCode = 400;
 
                 return httpContext.Response.WriteAsync(new ValidationErrorDetails
                 {
                     StatusCode = 400,
                     Message = message,
-                    Errors = errors
+                    ValidationErrors = errors
                 }.ToString());
             }
 

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Transactions;
-using Castle.DynamicProxy;
+﻿using Castle.DynamicProxy;
 using Core.Utilities.Interceptors;
+using System;
+using System.Transactions;
 
 namespace Core.Aspects.Autofac.Transaction
 {
@@ -18,7 +16,7 @@ namespace Core.Aspects.Autofac.Transaction
                     invocation.Proceed();
                     transactionScope.Complete();
                 }
-                catch (System.Exception e)
+                catch(Exception e)
                 {
                     transactionScope.Dispose();
                     throw;
